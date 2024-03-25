@@ -1,0 +1,1 @@
+To see Histogram outputs, we need to add the extension "Jupyter" to VS Code IDE.
