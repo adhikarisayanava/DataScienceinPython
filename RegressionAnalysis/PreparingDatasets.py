@@ -70,7 +70,7 @@ y = university_df['Chance_of_Admission']
 print(X.shape) #(1000, 7)
 print(y.shape) #(1000,)
 
-#Convert to numby array
+#Convert to numbpy array
 X = np.array(X)
 y = np.array(y)
 
