@@ -144,10 +144,10 @@ print(classification_report(y_test, y_predict))
 #Train and Evaluate a Random Forest Classifier
 from sklearn.ensemble import RandomForestClassifier
 
-rf = RandomForestClassifier()
-rf.fit(X_train, y_train.values.ravel())
+model_rf = RandomForestClassifier()
+model_rf.fit(X_train, y_train.values.ravel())
 
-y_predict = rf.predict(X_test)
+y_predict = model_rf.predict(X_test)
 print("Prediction from Random Forest classifier \n")
 print(classification_report(y_test, y_predict))
 
@@ -192,3 +192,36 @@ print(classification_report(y_test, y_predict))
 
 ################################################################################################
 #Plot ROC curve and evaluate AUC for all the 5 classifier models from above
+from sklearn.metrics import roc_curve
+fpr1, tpr1, thresh1 = roc_curve(y_test, model_LR.predict_proba(X_test)[:, 1], pos_label = 1)
+fpr2, tpr2, thresh2 = roc_curve(y_test, model_svm.predict_proba(X_test)[:, 1], pos_label = 1)
+fpr3, tpr3, thresh3 = roc_curve(y_test, model_rf.predict_proba(X_test)[:, 1], pos_label = 1)
+fpr4, tpr4, thresh4 = roc_curve(y_test, model_knn.predict_proba(X_test)[:, 1], pos_label = 1)
+fpr5, tpr5, thresh5 = roc_curve(y_test, model_gnb.predict_proba(X_test)[:, 1], pos_label = 1)
+
+from sklearn.metrics import roc_auc_score
+auc_score1 = roc_auc_score(y_test, model_LR.predict_proba(X_test)[:, 1])
+auc_score2 = roc_auc_score(y_test, model_svm.predict_proba(X_test)[:, 1])
+auc_score3 = roc_auc_score(y_test, model_rf.predict_proba(X_test)[:, 1])
+auc_score4 = roc_auc_score(y_test, model_knn.predict_proba(X_test)[:, 1])
+auc_score5 = roc_auc_score(y_test, model_gnb.predict_proba(X_test)[:, 1])
+
+print("Logistic Regression: ", auc_score1) # Logistic Regression
+print("Support Vector Machine: ", auc_score2) # Support Vector Machine
+print("Random Forest: ", auc_score3) # Random Forest
+print("K-Nearest Neighbors: ", auc_score4) # K-Nearest Neighbors
+print("Naive Bayes: ", auc_score5) # Naive Bayes
+
+plt.plot(fpr1, tpr1, linestyle = "--", color = "orange", label = "Logistic Regression")
+plt.plot(fpr2, tpr2, linestyle = "--", color = "red", label = "SVM")
+plt.plot(fpr3, tpr3, linestyle = "--", color = "green", label = "Random Forest")
+plt.plot(fpr4, tpr4, linestyle = "--", color = "yellow", label = "KNN")
+plt.plot(fpr5, tpr5, linestyle = "--", color = "blue", label = "Naive bayes")
+
+plt.title('Receiver Operator Characteristics (ROC)')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive rate')
+
+plt.legend(loc = 'best')
+plt.savefig('ROC', dpi = 300)
+plt.show()
