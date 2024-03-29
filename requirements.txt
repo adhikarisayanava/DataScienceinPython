@@ -3,3 +3,7 @@ pandas
 scikit-learn
 seaborn
 xgboost
+#Below are the requirements for AutoGluon
+autogluon.tabular
+autogluon.tabular[lightgbm]==1.0.0
+ray==2.6.3
