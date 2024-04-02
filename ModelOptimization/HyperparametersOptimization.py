@@ -96,9 +96,10 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 print(X_train.shape)
 print(X_test.shape)
  
-###########################Train and evaluate the model using XG-Boost 
+########################### Train and evaluate the model using XG-Boost ###########################
 import xgboost as xgb
 from math import sqrt
+
 
 #Train the model
 model = xgb.XGBRegressor(objective = 'reg:squarederror', learning_rate = 0.2, max_depth = 8, n_estimators = 500)
@@ -112,6 +113,104 @@ print(f"Accuracy: {result}")
 y_predict = model.predict(X_test)
 
 #Evaluate the model
+RMSE = float(format(np.sqrt(mean_squared_error(y_test, y_predict)),'.3f'))
+MSE = mean_squared_error(y_test, y_predict)
+MAE = mean_absolute_error(y_test, y_predict)
+r2 = r2_score(y_test, y_predict)
+
+print('RMSE =',RMSE, '\nMSE =',MSE, '\nMAE =',MAE, '\nR2 =', r2) 
+
+########################### Hyperparameter Optimization using GridSearch ###########################
+from sklearn.model_selection import GridSearchCV
+
+parameters_grid = {'max_depth' : [3,6,10],
+                   'learning_rate' : [0.01, 0.05, 0.1],
+                   'n_estimators' : [100,500,1000],
+                   'colsample_bytree' : [0.3, 0.7]
+                   }
+
+model = xgb.XGBRegressor()
+xgb_gridsearch = GridSearchCV(estimator=model,
+                              param_grid=parameters_grid,
+                              scoring='neg_mean_squared_error',
+                              cv = 5, #Determines the cross-validation splitting strategy
+                              verbose = 5
+                              )
+
+xgb_gridsearch.fit(X_train,y_train)
+
+print(xgb_gridsearch.best_params_)
+#print(xgb_gridsearch.best_estimator_)
+
+#Now we have the model to apply evaluation metrics
+y_predict = xgb_gridsearch.predict(X_test)
+
+#Evaluate the model
+RMSE = float(format(np.sqrt(mean_squared_error(y_test, y_predict)),'.3f'))
+MSE = mean_squared_error(y_test, y_predict)
+MAE = mean_absolute_error(y_test, y_predict)
+r2 = r2_score(y_test, y_predict)
+
+print('RMSE =',RMSE, '\nMSE =',MSE, '\nMAE =',MAE, '\nR2 =', r2) 
+
+########################### Hyperparameter Optimization using Random Search ###########################
+from sklearn.model_selection import RandomizedSearchCV
+
+grid = {
+    'n_estimators': [100, 500, 700],
+    'max_depth': [2, 3, 5],
+    'learning_rate': [0.1, 0.5, 1],
+    'min_child_weight': [1, 2, 3]
+    }
+
+model = xgb.XGBRegressor()
+random_cv = RandomizedSearchCV(estimator=model,
+                               param_distributions=grid,
+                               cv=5,
+                               n_iter=50,
+                               scoring='neg_mean_squared_error',
+                               verbose=5,
+                               return_train_score=True
+                               )
+
+random_cv.fit(X_train,y_train)
+
+print(random_cv.best_params_)
+#print(random_cv.best_estimator_)
+
+#Evaluate the model
+y_predict = random_cv.predict(X_test)
+
+RMSE = float(format(np.sqrt(mean_squared_error(y_test, y_predict)),'.3f'))
+MSE = mean_squared_error(y_test, y_predict)
+MAE = mean_absolute_error(y_test, y_predict)
+r2 = r2_score(y_test, y_predict)
+
+print('RMSE =',RMSE, '\nMSE =',MSE, '\nMAE =',MAE, '\nR2 =', r2) 
+
+
+########################### Hyperparameter Optimization using Bayesian Optimization ###########################
+from skopt import BayesSearchCV
+
+
+model = xgb.XGBRegressor(objective ='reg:squarederror')
+search_space = {
+    "learning_rate" : (0.01, 1.0, "log-uniform"),
+    "max_depth": (1, 50),
+    "n_estimators": (5, 500)
+    }
+
+print("Starting Bayesian Optimization")
+xgb_bayes_search = BayesSearchCV(model,
+                                 search_space,
+                                 n_iter=50,
+                                 scoring='neg_mean_absolute_error',
+                                 cv =5
+                                 )
+
+xgb_bayes_search.fit(X_train, y_train)
+y_predict = xgb_bayes_search.predict(X_test)
+
 RMSE = float(format(np.sqrt(mean_squared_error(y_test, y_predict)),'.3f'))
 MSE = mean_squared_error(y_test, y_predict)
 MAE = mean_absolute_error(y_test, y_predict)
