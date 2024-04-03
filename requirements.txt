@@ -9,5 +9,6 @@ autogluon.tabular[lightgbm]==1.0.0
 ray==2.6.3
 autogluon.tabular[fastai]==1.0.0
 catboost
+multimodal
 #Below one is for Bayesian optimization
 scikit-optimize

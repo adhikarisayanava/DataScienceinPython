@@ -34,7 +34,7 @@ print(X_train.shape)
 print(X_test.shape)
 
 #Train multiple models
-predictor = TabularPredictor(label="Outcome", problem_type = 'binary', eval_metric = 'accuracy').fit(train_data = X_train, time_limit = 200, presets = "best_quality")
+predictor = TabularPredictor(label="Outcome", problem_type = 'binary', eval_metric = 'accuracy').fit(train_data = X_train, time_limit = 120, presets = "best_quality")
 predictor.fit_summary()
 
 #Evaluate tained model performance
